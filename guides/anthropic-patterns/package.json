@@ -1,0 +1,17 @@
+{
+  "name": "@cloudflare/agents-anthropic-patterns",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "vite dev",
+    "deploy": "vite build && wrangler deploy"
+  },
+  "dependencies": {
+    "nanoid": "^5.1.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "The anthropic patterns, implemented with cloudflare agents"
+}
