@@ -7,8 +7,8 @@ on:
 
 jobs:
   prerelease:
-    timeout-minutes: 10
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
@@ -25,16 +25,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Modify package.json version
+      - name: Auto version bump
         run: npx tsx .github/version-script.ts
 
       - name: Resolve workspace dependencies
         run: npx tsx .github/resolve-workspace-versions.ts
 
-      - name: Build project
+      - name: Build all packages
         run: npm run build --if-present
 
-      - name: Type check
+      - name: Type check & lint
         run: npm run check --if-present
 
       - name: Run tests
@@ -42,14 +42,13 @@ jobs:
         env:
           CI: true
 
-      - name: Publish agents package (beta)
-        run: npm publish --tag beta
+      - name: Auto-publish all workspace packages (beta)
+        run: |
+          for pkg in packages/*; do
+            if [ -f "$pkg/package.json" ]; then
+              echo "Publishing $pkg..."
+              npm publish --tag beta --access public --workspace "$pkg"
+            fi
+          done
         env:
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        working-directory: packages/agents
-
-      - name: Publish hono-agents package (beta)
-        run: npm publish --tag beta
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        working-directory: packages/hono-agents
