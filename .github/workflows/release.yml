@@ -9,8 +9,8 @@ jobs:
   release:
     permissions:
       contents: write
+      pull-requests: write
 
-    if: ${{ github.repository_owner == 'cloudflare' }}
     timeout-minutes: 5
     runs-on: ubuntu-24.04
 
@@ -25,6 +25,7 @@ jobs:
           cache: "npm"
 
       - run: npm install
+      - run: npm install --save-dev tsx
       - run: npm run build
 
       - id: changesets
@@ -32,7 +33,7 @@ jobs:
         with:
           version: npx tsx .github/changeset-version.ts
           publish: npx tsx .github/changeset-publish.ts
+          setupGitUser: true
         env:
           GITHUB_TOKEN: ${{ secrets.AGENTS_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
